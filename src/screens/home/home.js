@@ -4,14 +4,29 @@ import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from "@react-navigation/native";
 import myNotesStored from '../../store/store';
 import { observer } from "mobx-react-lite";
-// import MaterialIcons from "react-native-vector-icons/MaterialIcons"; 
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Sound from 'react-native-sound';
 
-
+Sound.setCategory('Playback')
 
 const Home = observer(() => {
 
     const navigation = useNavigation()
+
+
+    const playClickSound = () => {
+        const clickSound = new Sound('handgun', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log("Fail to load sound :", error)
+                return;
+            }
+            clickSound.play((success) => {
+                if (!success) {
+                    console.log('Sound playback fail')
+                }
+                clickSound.release()
+            })
+        })
+    }
 
 
     return (
@@ -25,28 +40,49 @@ const Home = observer(() => {
                     <FlatList
                         data={myNotesStored.notes}
                         keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.card}>
-                                <View>
-                                    <Text style={styles.title}>{item.title}</Text>
-                                    <Text>{item.description}</Text>
-                                </View>
-                                <View style={styles.btnView}>
+                        renderItem={({ item }) => {
+                            console.log('item :', item)
+                            return (
+                                <View style={styles.card}>
+                                    <View>
+                                        <Text style={styles.title}>{item.title}</Text>
+                                        <Text>{item.description}</Text>
+                                    </View>
+                                    <View style={styles.btnView}>
 
-                                    <TouchableOpacity style={styles.editBTN} onPress={() => navigation.navigate('AddNotes', { noteid: item.id, notetitle: item.title, notedescription: item.description })}>
-                                        <Text style={styles.edit}>Edit</Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity style={styles.editBTN} onPress={() => {
+                                            playClickSound()
+                                            navigation.navigate('AddNotes', {
+                                                noteid: item.id,
+                                                notetitle: item.title,
+                                                notedescription: item.description
+                                            })
+                                        }}>
+                                            <Text style={styles.edit}>Edit</Text>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity style={styles.deleteBtn} onPress={() => myNotesStored.deleteNote(item.id)}>
-                                        <Text style={styles.delete}>Delete</Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity style={styles.deleteBtn} onPress={() => {
+                                            playClickSound()
+                                            myNotesStored.deleteNote(item.id)
+                                        }}>
+                                            <Text style={styles.delete}>Delete</Text>
+
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
-                        )}
+                            )
+                        }
+                        }
                     />
                 )}
             </View>
-            <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('AddNotes')}>
+            <TouchableOpacity style={styles.addBtn} onPress={() => {
+                playClickSound()
+                setTimeout(() => {
+
+                    navigation.navigate('AddNotes')
+                }, 1000)
+            }}>
 
                 <Text style={styles.btnText}>Add Notes</Text>
             </TouchableOpacity>

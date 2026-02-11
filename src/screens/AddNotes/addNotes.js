@@ -9,12 +9,13 @@ const AddNotes = observer(() => {
 
     const route = useRoute()
 
-    const { noteid, notetitle, notedescription } = route.params;
+    const {noteid , notetitle, notedescription } = route.params || {};
+
     const navigation = useNavigation()
     const [title, setTitle] = useState(notetitle || '')
     const [description, setDescription] = useState(notedescription || '')
 
-
+   
     const saveData = () => {
 
         if (!title || !description) return
@@ -29,7 +30,8 @@ const AddNotes = observer(() => {
         navigation.goBack()
 
     }
-    console.log(`Title : ${title} , description : ${description}`)
+   
+    
     return (
         <View style={styles.container}>
             <View style={styles.inputFields}>
